@@ -1,0 +1,1 @@
+"""SimpleClick REST API application."""
