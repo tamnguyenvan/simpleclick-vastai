@@ -72,13 +72,14 @@ class ModelService:
             sys.path.insert(0, root_string)
 
         import torch.serialization
+        import isegm
         from isegm.inference import utils
         from isegm.inference.clicker import Click, Clicker
         from isegm.model.modeling.transformer_helper.cross_entropy_loss import (
             CrossEntropyLoss,
         )
 
-        torch.serialization.add_safe_globals([CrossEntropyLoss])
+        torch.serialization.add_safe_globals([isegm.model.modeling.transformer_helper.cross_entropy_loss.cross_entropy])
         from isegm.inference.predictors import get_predictor
 
         if self.settings.model_device == "cuda" and not torch.cuda.is_available():
