@@ -55,11 +55,6 @@ class Settings(BaseSettings):
             raise ValueError("log_level must be a standard Python logging level")
         return value
 
-    @field_validator("api_key", mode="before")
-    @classmethod
-    def empty_api_key_to_none(cls, value: object) -> object:
-        return None if isinstance(value, str) and not value.strip() else value
-
     @field_validator("model_device")
     @classmethod
     def normalize_model_device(cls, value: str) -> str:

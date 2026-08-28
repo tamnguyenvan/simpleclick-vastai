@@ -88,6 +88,12 @@ def create_app(settings: Settings | None = None, service: ModelService | None = 
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
+        if settings.api_key is None or not settings.api_key.get_secret_value().strip():
+            logger.critical("SIMPLECLICK_API_KEY is not set; refusing to start")
+            raise RuntimeError(
+                "SIMPLECLICK_API_KEY is required and must not be empty. "
+                "Set it in the environment or .env before starting the API."
+            )
         logger.info("loading SimpleClick model")
         try:
             await asyncio.to_thread(service.load)

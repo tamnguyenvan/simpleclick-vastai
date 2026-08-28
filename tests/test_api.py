@@ -2,6 +2,7 @@ import base64
 import asyncio
 
 import httpx
+import pytest
 
 from app import main as app_module
 from app.main import create_app
@@ -29,7 +30,7 @@ class FakeService:
         return [[True]]
 
 
-def make_app(api_key=None):
+def make_app(api_key="test-secret-key"):
     settings = Settings(
         environment="test",
         log_json=False,
@@ -78,6 +79,7 @@ def test_health_endpoints_report_liveness_and_readiness():
 def test_segment_returns_mask_and_request_id():
     response = post(
         make_app(),
+        headers={"X-API-Key": "test-secret-key"},
         json={
             "image": PNG_1X1,
             "positive_points": [[0, 0]],
@@ -95,6 +97,7 @@ def test_segment_returns_mask_and_request_id():
 def test_validation_errors_use_stable_error_shape():
     response = post(
         make_app(),
+        headers={"X-API-Key": "test-secret-key"},
         json={"image": PNG_1X1, "positive_points": []},
     )
 
@@ -119,3 +122,9 @@ def test_api_key_is_required_when_configured():
     assert response.status_code == 401
     assert response.json()["error"]["code"] == "authentication_required"
     assert authorized.status_code == 200
+
+
+def test_missing_api_key_prevents_startup():
+    app = make_app(api_key=None)
+    with pytest.raises(RuntimeError, match="SIMPLECLICK_API_KEY"):
+        request(app, "GET", "/health/live")
