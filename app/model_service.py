@@ -79,7 +79,10 @@ class ModelService:
             CrossEntropyLoss,
         )
 
-        torch.serialization.add_safe_globals([isegm.model.modeling.transformer_helper.cross_entropy_loss.cross_entropy])
+        torch.serialization.add_safe_globals([
+            isegm.model.modeling.transformer_helper.cross_entropy_loss.cross_entropy,
+            isegm.model.modeling.transformer_helper.cross_entropy_loss.CrossEntropyLoss
+        ])
         from isegm.inference.predictors import get_predictor
 
         if self.settings.model_device == "cuda" and not torch.cuda.is_available():
