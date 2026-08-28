@@ -71,8 +71,14 @@ class ModelService:
         if root_string not in sys.path:
             sys.path.insert(0, root_string)
 
+        import torch.serialization
         from isegm.inference import utils
         from isegm.inference.clicker import Click, Clicker
+        from isegm.model.modeling.transformer_helper.cross_entropy_loss import (
+            CrossEntropyLoss,
+        )
+
+        torch.serialization.add_safe_globals([CrossEntropyLoss])
         from isegm.inference.predictors import get_predictor
 
         if self.settings.model_device == "cuda" and not torch.cuda.is_available():
